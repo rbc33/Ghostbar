@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Ghostbar}",
+            "name": "Debug Ghostbar",
+            "target": "Ghostbar",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Ghostbar"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Ghostbar}",
+            "name": "Release Ghostbar",
+            "target": "Ghostbar",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Ghostbar"
+        }
+    ]
+}
