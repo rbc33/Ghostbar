@@ -73,7 +73,13 @@ html,body{height:100%;background:transparent;color:var(--text);
 .body.rendered h2{font-size:1.05em;font-weight:600;margin:8px 0 3px;color:#e5e5ea}
 .body.rendered h3{font-size:1em;font-weight:600;margin:6px 0 3px;color:#e5e5ea}
 .body.rendered pre{background:rgba(0,0,0,.35);border-radius:6px;padding:10px 12px;
-  overflow-x:auto;margin:8px 0;white-space:pre;border:1px solid var(--border)}
+  overflow-x:auto;margin:8px 0;white-space:pre;border:1px solid var(--border);position:relative}
+.code-copy-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);
+  border:1px solid var(--border);color:var(--muted);
+  padding:3px 5px;border-radius:3px;line-height:0;
+  cursor:pointer;opacity:0;transition:opacity .15s,color .1s,border-color .1s}
+.body.rendered pre:hover .code-copy-btn{opacity:1}
+.code-copy-btn:hover{color:var(--accent);border-color:var(--accent)}
 .body.rendered code{background:rgba(0,0,0,.3);border-radius:3px;padding:1px 5px;font-size:.92em}
 .body.rendered pre code{background:none;padding:0;font-size:.9em}
 .body.rendered ul,.body.rendered ol{padding-left:18px;margin:4px 0}
@@ -90,8 +96,8 @@ html,body{height:100%;background:transparent;color:var(--text);
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .copy-btn{position:absolute;top:8px;right:8px;background:none;
   border:1px solid var(--border);color:var(--muted);
-  font-family:var(--font);font-size:10px;padding:2px 6px;border-radius:3px;
-  cursor:pointer;opacity:0;transition:opacity .15s, color .1s, border-color .1s;line-height:1.4}
+  padding:3px 5px;border-radius:3px;line-height:0;
+  cursor:pointer;opacity:0;transition:opacity .15s, color .1s, border-color .1s}
 .msg:hover .copy-btn{opacity:1}
 .copy-btn:hover{color:var(--accent);border-color:var(--accent)}
 .retry-btn{display:inline-block;margin-top:8px;background:none;
@@ -233,6 +239,31 @@ function renderMarkdown(src) {
     }
   }
   return out;
+}
+
+// ── Copy icon SVGs ────────────────────────────────────────────────────────────
+const COPY_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+const CHECK_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+// ── Code copy buttons ─────────────────────────────────────────────────────────
+function addCodeCopyButtons(container) {
+  container.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.code-copy-btn')) return;
+    const cb = document.createElement('button');
+    cb.className = 'code-copy-btn';
+    cb.innerHTML = COPY_ICON;
+    cb.addEventListener('click', e => {
+      e.stopPropagation();
+      const code = pre.querySelector('code');
+      const text = (code ? code.textContent : pre.textContent);
+      navigator.clipboard.writeText(text).then(() => {
+        cb.innerHTML = CHECK_ICON;
+        cb.style.color = 'var(--accent)';
+        setTimeout(() => { cb.innerHTML = COPY_ICON; cb.style.color = ''; }, 1500);
+      });
+    });
+    pre.appendChild(cb);
+  });
 }
 
 // ── Model dropdown ────────────────────────────────────────────────────────────
@@ -399,6 +430,7 @@ btn.addEventListener('click', e => {
         currentBody.setAttribute('data-raw', raw);
         currentBody.innerHTML = renderMarkdown(raw);
         currentBody.classList.add('rendered');
+        addCodeCopyButtons(currentBody);
         messages.push({role: 'assistant', content: raw});
       } else {
         messages.length = _messagesLenBeforeLastUser;
@@ -453,14 +485,14 @@ function addMsg(role) {
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
     copyBtn.title = 'Copy';
-    copyBtn.textContent = '⎘';
+    copyBtn.innerHTML = COPY_ICON;
     copyBtn.addEventListener('click', () => {
       const body = d.querySelector('.body');
       const text = body.getAttribute('data-raw') || body.textContent;
       navigator.clipboard.writeText(text).then(() => {
-        copyBtn.textContent = '✓';
+        copyBtn.innerHTML = CHECK_ICON;
         copyBtn.style.color = 'var(--accent)';
-        setTimeout(() => { copyBtn.textContent = '⎘'; copyBtn.style.color = ''; }, 1500);
+        setTimeout(() => { copyBtn.innerHTML = COPY_ICON; copyBtn.style.color = ''; }, 1500);
       });
     });
     d.appendChild(copyBtn);
@@ -498,6 +530,7 @@ function endStream(isError) {
     currentBody.setAttribute('data-raw', raw);
     currentBody.innerHTML = renderMarkdown(raw);
     currentBody.classList.add('rendered');
+    addCodeCopyButtons(currentBody);
     messages.push({role: 'assistant', content: raw});
   } else {
     messages.length = _messagesLenBeforeLastUser;

@@ -273,8 +273,10 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
 
     func startStream(req: URLRequest, parser: StreamParser) {
         currentStreamSession?.invalidateAndCancel()
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30  // 30s of silence = hang, abort
         let delegate = StreamDelegate(webView: view, parser: parser)
-        let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+        let session = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
         currentStreamSession = session
         session.dataTask(with: req).resume()
     }

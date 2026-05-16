@@ -10,8 +10,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
             button.title = "⬡"
-            button.action = #selector(openMenu)
-            button.target = self
         }
         buildMenu()
         addEditMenu()
@@ -74,7 +72,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    @objc func openMenu() {}
     @objc func toggleChat() {
         if chatWindow == nil { chatWindow = ChatWindow() }
         chatWindow?.showAndFocus()
@@ -123,6 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             Preset(label: "NVIDIA NIM",    type: .openai,     url: "https://integrate.api.nvidia.com/v1", hint: "Requires API key"),
             Preset(label: "llama.cpp",     type: .openai,     url: "http://localhost:8080/v1",            hint: "Local llama.cpp server"),
             Preset(label: "LM Studio",     type: .openai,     url: "http://localhost:1234/v1",            hint: "Local LM Studio server"),
+            Preset(label: "vLLM",          type: .openai,     url: "http://localhost:8000/v1",            hint: "Local vLLM server"),
         ]
 
         let selectedIdx = presets.firstIndex(where: { $0.url == cfg.url && $0.type == cfg.type })

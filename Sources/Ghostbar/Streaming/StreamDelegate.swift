@@ -30,6 +30,7 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
                 let escaped = token
                     .replacingOccurrences(of: "\\", with: "\\\\")
                     .replacingOccurrences(of: "`", with: "\\`")
+                    .replacingOccurrences(of: "$", with: "\\$")
                 DispatchQueue.main.async {
                     self.webView.evaluateJavaScript("appendToken(`\(escaped)`)", completionHandler: nil)
                 }
