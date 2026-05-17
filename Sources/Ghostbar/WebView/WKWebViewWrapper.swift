@@ -15,7 +15,7 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
         view = WKWebView(frame: frame, configuration: config)
         view.setValue(false, forKey: "drawsBackground")
         super.init()
-        for name in ["sendMessage","loadModels","startRecording","stopRecording","stopStream","checkWhisper","closeWindow","captureScreen","clearScreenshot","initModel"] {
+        for name in ["sendMessage","loadModels","startRecording","stopRecording","stopStream","checkWhisper","closeWindow","captureScreen","clearScreenshot","initModel","openSettings"] {
             cc.add(self, name: name)
         }
         loadHTML()
@@ -55,6 +55,10 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
             requestMicAndRecord()
         case "closeWindow":
             DispatchQueue.main.async { self.view.window?.orderOut(nil) }
+        case "openSettings":
+            DispatchQueue.main.async {
+                (NSApp.delegate as? AppDelegate)?.configureBackend()
+            }
         case "stopStream":
             currentStreamSession?.invalidateAndCancel()
             currentStreamSession = nil
