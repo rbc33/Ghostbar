@@ -7,5 +7,6 @@ Ghostbar.iconset/
 set_icon.sh
 .DS_Store
 extra/*
+.vscode/
 
 extra/
