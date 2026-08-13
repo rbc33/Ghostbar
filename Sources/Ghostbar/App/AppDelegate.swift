@@ -69,7 +69,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func menuWillOpen(_ menu: NSMenu) {
-        NSApp.activate(ignoringOtherApps: true)
+        // Intentionally do NOT activate the app — opening the status-bar menu
+        // should not pull focus away from the frontmost application.
     }
 
     @objc func toggleChat() {

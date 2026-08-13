@@ -40,7 +40,7 @@ class PrivateDropdown: NSObject, NSTableViewDataSource, NSTableViewDelegate {
 
         panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 250, height: 200),
-            styleMask: [.borderless],
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered, defer: false)
         panel.sharingType = .none
         panel.backgroundColor = NSColor.controlBackgroundColor
@@ -79,7 +79,7 @@ class PrivateDropdown: NSObject, NSTableViewDataSource, NSTableViewDelegate {
             tableView.scrollRowToVisible(idx)
         }
         win.addChildWindow(panel, ordered: .above)
-        panel.makeKeyAndOrderFront(nil)
+        panel.orderFrontRegardless()
     }
 
     @objc private func rowClicked() {
