@@ -29,7 +29,7 @@ class ChatWindow: NSObject, NSWindowDelegate {
         window.standardWindowButton(.zoomButton)?.isHidden     = true
         window.level = .floating
         window.isFloatingPanel = true
-        window.hidesOnDeactivate = false   // keep overlay visible while App X is active
+        window.hidesOnDeactivate = false
         if shouldCenter { window.center() }
         window.isReleasedWhenClosed = false
         window.sharingType = .none
@@ -52,8 +52,6 @@ class ChatWindow: NSObject, NSWindowDelegate {
     }
 
     func showAndFocus() {
-        // Show above other apps and become the keyboard target WITHOUT activating
-        // Ghostbar — App X stays the frontmost/active application.
         window.orderFrontRegardless()
         window.makeKey()
         window.sharingType = .none

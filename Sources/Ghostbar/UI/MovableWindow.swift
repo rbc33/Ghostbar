@@ -4,9 +4,6 @@ class MovableWindow: NSPanel {
     private var dragging = false
     private let headerHeight: CGFloat = 38
 
-    // Become the keyboard target so the user can type into the overlay, without
-    // making Ghostbar the active application. canBecomeMain stays false (NSPanel
-    // default) so App X keeps ownership of the menu bar / frontmost status.
     override var canBecomeKey: Bool { true }
 
     override func sendEvent(_ event: NSEvent) {
