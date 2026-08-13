@@ -1,8 +1,10 @@
 import AppKit
 
-class MovableWindow: NSWindow {
+class MovableWindow: NSPanel {
     private var dragging = false
     private let headerHeight: CGFloat = 38
+
+    override var canBecomeKey: Bool { true }
 
     override func sendEvent(_ event: NSEvent) {
         let h = contentView?.frame.height ?? frame.height

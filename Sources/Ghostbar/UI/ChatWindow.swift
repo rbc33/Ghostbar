@@ -17,7 +17,7 @@ class ChatWindow: NSObject, NSWindowDelegate {
 
         window = MovableWindow(
             contentRect: initialFrame,
-            styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -28,6 +28,8 @@ class ChatWindow: NSObject, NSWindowDelegate {
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden     = true
         window.level = .floating
+        window.isFloatingPanel = true
+        window.hidesOnDeactivate = false
         if shouldCenter { window.center() }
         window.isReleasedWhenClosed = false
         window.sharingType = .none
@@ -50,8 +52,8 @@ class ChatWindow: NSObject, NSWindowDelegate {
     }
 
     func showAndFocus() {
-        NSApp.activate(ignoringOtherApps: true)
-        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+        window.makeKey()
         window.sharingType = .none
     }
 

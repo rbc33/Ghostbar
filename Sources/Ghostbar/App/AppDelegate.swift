@@ -69,7 +69,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func menuWillOpen(_ menu: NSMenu) {
-        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc func toggleChat() {
