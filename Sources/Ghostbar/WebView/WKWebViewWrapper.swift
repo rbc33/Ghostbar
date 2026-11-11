@@ -75,8 +75,12 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
                 transcribe(audioURL: url) { [weak self] text in
                     DispatchQueue.main.async {
                         if let t = text {
-                            let esc = t.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "'", with: "\\'")
-                            self?.view.evaluateJavaScript("onTranscription('\(esc)')", completionHandler: nil)
+                            // whisper outputs one line per segment; join them into a single paragraph
+                            let clean = t.split(whereSeparator: \.isNewline)
+                                .map { $0.trimmingCharacters(in: .whitespaces) }
+                                .filter { !$0.isEmpty }
+                                .joined(separator: " ")
+                            self?.view.evaluateJavaScript("onTranscription(\(jsString(clean)))", completionHandler: nil)
                         } else {
                             self?.view.evaluateJavaScript("onTranscription(null)", completionHandler: nil)
                         }
@@ -134,10 +138,7 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
         if prompt.isEmpty {
             view.evaluateJavaScript("setScreenshotPrompt(null)", completionHandler: nil)
         } else {
-            let esc = prompt
-                .replacingOccurrences(of: "\\", with: "\\\\")
-                .replacingOccurrences(of: "'", with: "\\'")
-            view.evaluateJavaScript("setScreenshotPrompt('\(esc)')", completionHandler: nil)
+            view.evaluateJavaScript("setScreenshotPrompt(\(jsString(prompt)))", completionHandler: nil)
         }
     }
 

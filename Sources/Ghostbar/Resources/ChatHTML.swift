@@ -4,6 +4,14 @@ func jsonString(_ arr: [String]) -> String {
     (try? String(data: JSONSerialization.data(withJSONObject: arr), encoding: .utf8)) ?? "[]"
 }
 
+/// Encodes a Swift string as a JS string literal (quotes included).
+/// Safe for newlines, quotes, backslashes and control characters.
+func jsString(_ s: String) -> String {
+    guard let data = try? JSONSerialization.data(withJSONObject: s, options: .fragmentsAllowed),
+          let json = String(data: data, encoding: .utf8) else { return "null" }
+    return json
+}
+
 func chatHTML() -> String { return """
 <!DOCTYPE html>
 <html lang="en">
