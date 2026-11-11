@@ -50,9 +50,7 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
         }
         DispatchQueue.main.async {
             if let m = msg {
-                let esc = m.replacingOccurrences(of: "\\", with: "\\\\")
-                           .replacingOccurrences(of: "'", with: "\\'")
-                self.webView.evaluateJavaScript("appendToken('\(esc)')", completionHandler: nil)
+                self.webView.evaluateJavaScript("appendToken(\(jsString(m)))", completionHandler: nil)
             }
             self.webView.evaluateJavaScript("endStream(\(isError))", completionHandler: nil)
         }
