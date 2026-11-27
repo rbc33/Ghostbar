@@ -222,7 +222,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                     status.stringValue = "✗ Invalid URL"; status.textColor = .systemRed; return
                 }
                 var req = URLRequest(url: reqURL, timeoutInterval: 5)
-                if !apiKey.isEmpty { req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization") }
+                if currentType == .anthropic {
+                    if !apiKey.isEmpty { req.setValue(apiKey, forHTTPHeaderField: "x-api-key") }
+                    req.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+                } else if !apiKey.isEmpty {
+                    req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+                }
                 URLSession.shared.dataTask(with: req) { _, response, error in
                     RunLoop.main.perform(inModes: [.common]) {
                         if let e = error {

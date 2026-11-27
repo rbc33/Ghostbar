@@ -22,10 +22,14 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         buffer.append(data)
         if httpError != nil { return }
-        let str   = String(data: buffer, encoding: .utf8) ?? ""
-        let lines = str.components(separatedBy: "\n")
-        for (i, line) in lines.enumerated() {
-            guard !line.isEmpty, i < lines.count - 1 else { continue }
+        // Split on newline bytes before decoding, so a multi-byte UTF-8 character
+        // split across chunks stays in the buffer instead of failing the decode.
+        guard let lastNewline = buffer.lastIndex(of: 0x0A) else { return }
+        let complete = buffer[buffer.startIndex..<lastNewline]
+        let lines = (String(data: complete, encoding: .utf8) ?? "").components(separatedBy: "\n")
+        buffer = Data(buffer[buffer.index(after: lastNewline)...])
+        for line in lines {
+            guard !line.isEmpty else { continue }
             if let token = parser.token(from: line) {
                 let escaped = token
                     .replacingOccurrences(of: "\\", with: "\\\\")
@@ -36,7 +40,6 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
                 }
             }
         }
-        buffer = lines.last.flatMap { $0.isEmpty ? nil : $0.data(using: .utf8) } ?? Data()
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
