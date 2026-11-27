@@ -39,14 +39,15 @@ cat > "$APP/Contents/Info.plist" << 'PLIST'
   <key>NSScreenCaptureUsageDescription</key><string>Ghostbar needs screen access to capture context for AI responses.</string>
   <key>NSAppTransportSecurity</key>
   <dict>
-    <key>NSAllowsArbitraryLoads</key><true/>
+    <key>NSAllowsLocalNetworking</key><true/>
   </dict>
 </dict>
 </plist>
 PLIST
 
 echo "→ Signing..."
-cat > /tmp/entitlements.plist << 'ENT'
+ENTITLEMENTS="$(mktemp -t ghostbar-entitlements)"
+cat > "$ENTITLEMENTS" << 'ENT'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -59,8 +60,9 @@ ENT
 
 codesign --force --deep --sign - \
   --identifier "com.local.ghostbar" \
-  --entitlements /tmp/entitlements.plist \
+  --entitlements "$ENTITLEMENTS" \
   "$APP"
+rm -f "$ENTITLEMENTS"
 
 echo "→ Resetting TCC permissions (signature changed)..."
 tccutil reset ScreenCapture com.local.ghostbar 2>/dev/null || true

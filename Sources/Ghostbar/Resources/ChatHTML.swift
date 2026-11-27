@@ -4,13 +4,17 @@ func jsonString(_ arr: [String]) -> String {
     (try? String(data: JSONSerialization.data(withJSONObject: arr), encoding: .utf8)) ?? "[]"
 }
 
+// Encodes a string as a JSON string literal, which is always a safe JS literal.
+func jsLiteral(_ s: String) -> String {
+    (try? String(data: JSONSerialization.data(withJSONObject: s, options: .fragmentsAllowed), encoding: .utf8)) ?? "\"\""
+}
+
 func chatHTML() -> String { return """
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:rgba(28,30,36,0.55);--surface:rgba(41,44,51,0.7);--border:rgba(255,255,255,0.08);
