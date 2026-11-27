@@ -27,12 +27,8 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
         for (i, line) in lines.enumerated() {
             guard !line.isEmpty, i < lines.count - 1 else { continue }
             if let token = parser.token(from: line) {
-                let escaped = token
-                    .replacingOccurrences(of: "\\", with: "\\\\")
-                    .replacingOccurrences(of: "`", with: "\\`")
-                    .replacingOccurrences(of: "$", with: "\\$")
                 DispatchQueue.main.async {
-                    self.webView.evaluateJavaScript("appendToken(`\(escaped)`)", completionHandler: nil)
+                    self.webView.evaluateJavaScript("appendToken(\(jsLiteral(token)))", completionHandler: nil)
                 }
             }
         }
@@ -50,9 +46,7 @@ class StreamDelegate: NSObject, URLSessionDataDelegate {
         }
         DispatchQueue.main.async {
             if let m = msg {
-                let esc = m.replacingOccurrences(of: "\\", with: "\\\\")
-                           .replacingOccurrences(of: "'", with: "\\'")
-                self.webView.evaluateJavaScript("appendToken('\(esc)')", completionHandler: nil)
+                self.webView.evaluateJavaScript("appendToken(\(jsLiteral(m)))", completionHandler: nil)
             }
             self.webView.evaluateJavaScript("endStream(\(isError))", completionHandler: nil)
         }

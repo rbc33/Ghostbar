@@ -75,8 +75,7 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
                 transcribe(audioURL: url) { [weak self] text in
                     DispatchQueue.main.async {
                         if let t = text {
-                            let esc = t.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "'", with: "\\'")
-                            self?.view.evaluateJavaScript("onTranscription('\(esc)')", completionHandler: nil)
+                            self?.view.evaluateJavaScript("onTranscription(\(jsLiteral(t)))", completionHandler: nil)
                         } else {
                             self?.view.evaluateJavaScript("onTranscription(null)", completionHandler: nil)
                         }
@@ -117,7 +116,7 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
 
     func sendSavedModel() {
         if let saved = UserDefaults.standard.string(forKey: "selectedModel") {
-            view.evaluateJavaScript("setSavedModel('\(saved)')", completionHandler: nil)
+            view.evaluateJavaScript("setSavedModel(\(jsLiteral(saved)))", completionHandler: nil)
         }
     }
 
@@ -134,10 +133,7 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
         if prompt.isEmpty {
             view.evaluateJavaScript("setScreenshotPrompt(null)", completionHandler: nil)
         } else {
-            let esc = prompt
-                .replacingOccurrences(of: "\\", with: "\\\\")
-                .replacingOccurrences(of: "'", with: "\\'")
-            view.evaluateJavaScript("setScreenshotPrompt('\(esc)')", completionHandler: nil)
+            view.evaluateJavaScript("setScreenshotPrompt(\(jsLiteral(prompt)))", completionHandler: nil)
         }
     }
 
