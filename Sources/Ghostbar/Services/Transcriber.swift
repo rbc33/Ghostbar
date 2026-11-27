@@ -31,7 +31,10 @@ func findWhisperModel() -> String? {
 
 func transcribe(audioURL: URL, completion: @escaping (String?) -> Void) {
     guard let bin   = findWhisperBin(),
-          let model = findWhisperModel() else { completion(nil); return }
+          let model = findWhisperModel() else {
+        try? FileManager.default.removeItem(at: audioURL)
+        completion(nil); return
+    }
     print("[whisper] \(bin) model=\(model)")
     let task = Process()
     task.executableURL = URL(fileURLWithPath: bin)
@@ -55,5 +58,9 @@ func transcribe(audioURL: URL, completion: @escaping (String?) -> Void) {
             completion(text.isEmpty ? nil : text)
         }
     }
-    do { try task.run() } catch { print("[whisper] \(error)"); completion(nil) }
+    do { try task.run() } catch {
+        print("[whisper] \(error)")
+        try? FileManager.default.removeItem(at: audioURL)
+        completion(nil)
+    }
 }

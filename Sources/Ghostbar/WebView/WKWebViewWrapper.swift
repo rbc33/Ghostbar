@@ -35,8 +35,10 @@ class WKWebViewWrapper: NSObject, WKScriptMessageHandler {
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 guard let self = self else { return }
                 if let b64 = captureScreenBase64() {
-                    self.storedScreenshot = b64
-                    DispatchQueue.main.async { self.view.evaluateJavaScript("onScreenshotCaptured()", completionHandler: nil) }
+                    DispatchQueue.main.async {
+                        self.storedScreenshot = b64
+                        self.view.evaluateJavaScript("onScreenshotCaptured()", completionHandler: nil)
+                    }
                 } else {
                     DispatchQueue.main.async { self.view.evaluateJavaScript("onScreenshotError()", completionHandler: nil) }
                 }
